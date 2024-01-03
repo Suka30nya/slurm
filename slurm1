@@ -42,3 +42,38 @@
    42  su hpcsa1
    43  passwd hpcsa1
    44  history
+
+
+
+
+
+
+
+
+
+
+
+hpcsa1@master:~$ history
+    1  cd
+    2  vi f2
+    3  ls
+    4  hpcsa1 passwd
+    5  passwd hpcsa1
+    6  cd
+    7  ls
+    8  cd
+    9  ls
+   10  touch f3
+   11  ls
+   12  su -
+   13  cd
+   14  ssh-keygen -t rsa
+   15  cp .ssh/id_rsa.pub .ssh/authorized_keys
+   16  ls
+   17  cp .ssh/id_rsa.pub .ssh/authorized_keys2
+   18  chmod 600 .ssh/authorized_keys*
+   19  ssh hpcsa1@compute1.lab
+   20  ssh hpcsa1@compute2.lab
+   21  history
+
+
