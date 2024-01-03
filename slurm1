@@ -1,0 +1,44 @@
+  1  cd
+    2  fdisk /dev/sdb
+    3  lsblk
+    4  mkfs.ext4 /dev/sdb1
+    5  lsblk
+    6  pwd
+    7  mkdir /nfs
+    8  ls
+    9  mkdir /nfs && echo $?
+   10  ls /nfs && echo $?
+   11  mount /dev/sdb1 /nfs && echo $?
+   12  df -h
+   13  apt -y install open-vm-tools
+   14  apt install nfs-kernel-server -y
+   15  history
+   16  ssh compute1.lab "apt -y install nfs-common"
+   17  ssh compute2.lab "apt -y install nfs-common"
+   18  vi /etc/exports
+   19  exportfs -avr
+   20  vi /etc/exports
+   21  ssh compute2.lab
+   22  ssh compute1.lab "mkdir /nfs"
+   23  ssh compute2.lab "mkdir /nfs"
+   24  ssh compute1.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   25  ssh compute1.lab "df -h"
+   26  ssh compute2.lab "df -h"
+   27  ssh compute2.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   28  ssh compute2.lab "df -h"
+   29  useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1
+   30  groupadd -g 10001 rma
+   31  useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1
+   32  ssh compute1.lab "groupadd -g 10001 rma"
+   33  ssh compute1.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   34  cat /etc/passwd
+   35  ssh compute1.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   36  ssh compute2.lab "groupadd -g 10001 rma"
+   37  ssh compute2.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   38  pwd
+   39  ls
+   40  touch f1
+   41  ls
+   42  su hpcsa1
+   43  passwd hpcsa1
+   44  history
