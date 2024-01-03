@@ -42,6 +42,8 @@
    42  su hpcsa1
    43  passwd hpcsa1
    44  history
+   45  su hpcsa1
+   46  history
 
 
 
