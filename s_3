@@ -1,0 +1,424 @@
+Resource management
+```````````````````
+
+3 vm machine
+1	-> 	master
+ubuntu
+20gb drive
+4gb ram
+100 gb extra drive for centralized storage.
+#hostnamectl set-hostname master.lab
+#vi /etc/hosts
+	ip_master master.lab
+	ip_node1 compute_node1.lab
+	ip_node2 compute_node2.lab
+:wq
+# apt update -y
+# apt install openssh-server -y
+# apt install vim -y
+# ssh-keygen -t rsa
+# cd .ssh/
+# cat id_rsa.pub
+	copy this key
+	first on all node run cmd - # ssh-keygen -t rsa it create a directory in all nodes .ssh
+	paste to the all node root cmd - # vi authorized_keys 
+									paste the key and save it
+									
+									
+100 GB HDD
+``````````
+
+fdisk 	-> New partition table
+fdisk 	-> New partition
+mkfs 	-> New file system
+mount 	-> Mount
+
+fdisk -> New partition table
+````````````````````````````
+# lsblk
+to show our hdd name
+# fdisk /dev/sdb
+to create new partition table
+press m
+press g
+press n
+press enter
+press enter
+press enter
+press w
+
+
+#lsblk to check the partition table is created or not
+
+#mkfs.ext4 /dev/sdb1
+it creates file system
+allocating group tables: done
+
+# df -h
+	- it shows that the extra hdd of 100 is mount or not.
+# mkdir /nfs
+# mount /dev/sdb1 /nfs && echo $?
+# vi /etc/fstab
+	
+	- enter this for set hdd 100 permanently.
+	/dev/sdb1       /nfs            ext4    defaults        0       0       mount-a
+	
+# df -h
+show like - 
+			/dev/sdb1        98G   24K   93G   1% /nfs
+
+# apt install nfs-kernel-server -y
+# vi /etc/exports
+	last line
+				/nfs 192.168.144.186(rw,sync,no_root_squash,no_subtree_check)
+				/nfs 192.168.144.187(rw,sync,no_root_squash,no_subtree_check)
+			:wq
+# exportfs -avr
+
+# ssh 192.168.144.186
+# showmount -e 192.168.144.185
+# mkdir /nfs
+# mount -t nfs 192.168.144.185:/nfs/ /nfs/
+# groupadd -g 10001 rma
+# useradd -m  -d /nfs/hpcsa1 -u 10001 -s /bin/bash hpcsa1
+# exit
+
+# ssh 192.168.144.187
+# showmount -e 192.168.144.185
+# mkdir /nfs
+# mount -t nfs 192.168.144.185:/nfs/ /nfs/
+# groupadd -g 10001 rma
+# useradd -m  -d /nfs/hpcsa1 -u 10001 -s /bin/bash hpcsa1
+# exit
+
+master
+``````
+
+groupadd -g 10001 rma
+useradd -m  -d /nfs/hpcsa1 -u 10001 -s /bin/bash hpcsa1
+ssh compute1.lab "echo '192.168.144.185:/nfs /nfs nfs defaults 0 0' | sudo tee /etc/fstab"
+ssh compute2.lab "echo '192.168.144.185:/nfs /nfs nfs defaults 0 0' | sudo tee /etc/fstab"
+
+
+su hpcsa1
+vi test
+	write some data
+	:wq
+exit
+# ssh 192.168.144.186
+# su hpcsa1 
+# ls 
+ test
+#exit
+
+# ssh 192.168.144.186
+# su hpcsa1 
+# ls 
+ test
+#exit
+
+# su - hpcsa1
+$ ssh-keygen -t rsa
+$ cp .ssh/id_rsa .ssh/authourized_keys
+ 
+master
+``````
+browser
+google
+https://www.schedmd.com/archives.php
+go to this link 
+copy any slurm version link
+run command on master node
+# cd /opt
+# wget <paste the link of your slurm version>
+# ls
+# tar -xvf <press tab>
+
+
+# ssh 192.168.144.186
+# cd /opt
+# wget <paste the link of your slurm version>
+# ls
+# tar -xvf <press tab>
+# exit
+
+# ssh 192.168.144.187
+# cd /opt
+# wget <paste the link of your slurm version>
+# ls
+# tar -xvf <press tab>
+# exit
+
+master
+``````
+# apt install -y build-essential munge libmunge-dev libmunge2 libmysqlclient-dev libssl-dev libpam0g-dev libnuma-dev perl
+# ssh 192.168.144.186
+# apt install -y build-essential munge libmunge-dev libmunge2
+# exit
+
+# ssh 192.168.144.187
+# apt install -y build-essential munge libmunge-dev libmunge2
+# exit
+
+root@master:~# ls /opt/
+slurm-21.08.8  slurm-21.08.8.tar.bz2
+root@master:~# cd /opt/slurm-21.08.8/
+auxdir/    contribs/  doc/       etc/       slurm/     src/       testsuite/ 
+root@master:~# cd /opt/slurm-21.08.8/
+root@master:/opt/slurm-21.08.8# ./configure --prefix=/opt/slurm-21.08.8
+root@master:/opt/slurm-21.08.8# make
+root@master:/opt/slurm-21.08.8# make install
+
+root@master:~# ssh compute1.lab
+root@compute1:~# cd /opt/slurm-21.08.8/
+root@compute1:/opt/slurm-21.08.8# ./configure --prefix=/opt/slurm-21.08.8
+root@compute1:/opt/slurm-21.08.8# make
+root@compute1:/opt/slurm-21.08.8# make install
+exit
+
+root@master:~# ssh compute2.lab
+root@compute2:~# cd /opt/slurm-21.08.8/
+root@compute2:/opt/slurm-21.08.8# ./configure --prefix=/opt/slurm-21.08.8
+root@compute2:/opt/slurm-21.08.8# make
+root@compute2:/opt/slurm-21.08.8# make install
+exit
+
+root@master:/opt/slurm-21.08.8# su - munge 
+su: warning: cannot change directory to /nonexistent: No such file or directory
+This account is currently not available.
+
+root@master:/opt/slurm-21.08.8# chown munge: /etc/munge/munge.key
+
+root@master:/opt/slurm-21.08.8# chmod 400 /etc/munge/munge.key
+
+root@master:~# scp -r /etc/munge/munge.key gourav@compute1.lab:/tmp
+gourav@compute1.lab's password: 
+munge.key                                                     100%  128    87.8KB/s   00:00    
+
+scp -r /etc/munge/munge.key gourav@compute2.lab:/tmp
+gourav@compute2.lab's password: 
+munge.key                                                     100%  128    95.5KB/s   00:00
+
+root@master:~# chown -R munge: /etc/munge/ /var/log/munge/
+
+root@master:~# chmod 0700 /etc/munge/ /var/log/munge/
+
+root@master:~# systemctl enable munge
+Synchronizing state of munge.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable munge
+
+root@master:~# systemctl start munge
+
+
+root@master:~# ssh compute1.lab
+
+root@compute1:~# cp -r /tmp/munge.key /etc/munge
+
+root@compute1:~# chown -R munge: /etc/munge/ /var/log/munge/
+ 
+root@compute1:~# chmod 0700 /etc/munge/ /var/log/munge/
+
+root@compute1:~# systemctl enable munge
+Synchronizing state of munge.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable munge
+
+root@compute1:~# systemctl start munge
+exit
+
+root@master:~# ssh compute2.lab
+root@compute2:/opt/slurm-21.08.8# cp -r /tmp/munge.key /etc/munge/
+
+root@compute2:/opt/slurm-21.08.8# chown -R munge: /etc/munge/ /var/log/munge/
+
+root@compute2:/opt/slurm-21.08.8# chmod 0700 /etc/munge/ /var/log/munge/
+
+root@compute2:/opt/slurm-21.08.8# systemctl enable munge
+Synchronizing state of munge.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable munge
+
+root@compute2:/opt/slurm-21.08.8# systemctl start munge
+exit
+
+root@master:~# cd /opt/slurm-21.08.8/
+root@master:/opt/slurm-21.08.8# cd etc
+root@master:/opt/slurm-21.08.8/etc# cp slurm.conf.example slurm.conf
+root@master:/opt/slurm-21.08.8/etc# vi slurm.conf
+				12. SlurmctldHost=master.lab
+uncomment line 	30. MailProg=/bin/mail
+				53. SlurmUser=root
+last two line
+		153. NodeName=master.lab,compute1.lab,compute2.lab CPUs=1 State=UNKNOWN
+	:wq
+
+root@master:/opt/slurm-21.08.8/etc# apt-get install mailutils -y
+
+root@master:/opt/slurm-21.08.8/etc# /opt/slurm-21.08.8/sbin/slurmctld -D
+
+root@master:/opt/slurm-21.08.8/etc# ln -s /opt/slurm-21.08.8/etc/slurmctld.service /usr/lib/systemd/system/slurmctld.service
+
+root@master:/opt/slurm-21.08.8/etc# ln -s /opt/slurm-21.08.8/etc/slurmd.service /usr/lib/systemd/system/slurmd.service
+
+root@master:/opt/slurm-21.08.8/etc# systemctl start slurmctld.service
+
+root@master:/opt/slurm-21.08.8/etc# systemctl status slurmctld.service 
+
+{
+	--if servcice is not activate got an error 
+	root@master:/opt/slurm-21.08.8/etc# 
+	root@master:/opt/slurm-21.08.8/etc# cp cgroup.conf.example cgroup.conf
+	root@master:/opt/slurm-21.08.8/etc# systemctl start slurmctld.service
+}
+
+root@master:/opt/slurm-21.08.8/bin# export PATH="/opt/slurm-21.08.8/bin:$PATH"
+
+root@master:/opt/slurm-21.08.8/bin# export PATH="/opt/slurm-21.08.8/sbin:$PATH"
+
+root@master:/opt/slurm-21.08.8/lib# export LD_LIBRARY_PATH="/opt/slurm-21.08.8/lib:$LD_LIBRARY_PATH"
+
+root@master:~# vi .bashrc
+	last line
+		export PATH="/opt/slurm-21.08.8/bin:$PATH"
+		export PATH="/opt/slurm-21.08.8/sbin:$PATH"
+		export LD_LIBRARY_PATH="/opt/slurm-21.08.8/lib:$LD_LIBRARY_PATH"
+
+root@master:~# sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+debug*       up   infinite      3   unk* compute1.lab,compute2.lab,master.lab
+	
+on master
+`````````
+root@master:/opt/slurm-21.08.8/etc# scp -r slurm.conf gourav@compute1.lab:/tmp
+
+root@master:/opt/slurm-21.08.8/etc# scp -r slurm.conf gourav@compute1.lab:/tmp
+
+root@master:/opt/slurm-21.08.8/etc# scp -r slurm.conf gourav@compute2.lab:/tmp
+
+
+
+on both compute nodes
+````````````````
+
+root@compute1:/opt/slurm-21.08.8/etc# cp -r /tmp/slurm.conf /opt/slurm-21.08.8/etc/
+
+root@compute2:/opt/slurm-21.08.8/etc# cp -r /tmp/slurm.conf /opt/slurm-21.08.8/etc
+
+root@master:/opt/slurm-21.08.8/etc# systemctl status slurmd.service 
+
+
+root@master:/opt/slurm-21.08.8# cd etc
+root@master:/opt/slurm-21.08.8/etc# cp slurm.conf.example slurm.conf
+root@master:/opt/slurm-21.08.8/etc# vi slurm.conf
+				12. SlurmctldHost=master.lab
+uncomment line 	30. MailProg=/bin/mail
+				53. SlurmUser=root
+last two line
+		153. NodeName=master.lab,compute1.lab,compute2.lab CPUs=1 State=UNKNOWN
+	:wq
+	
+master
+``````
+	
+root@master:/opt/slurm-21.08.8/etc# /opt/slurm-21.08.8/sbin/slurmctld -D
+
+root@master:/opt/slurm-21.08.8/etc# ln -s /opt/slurm-21.08.8/etc/slurmctld.service /usr/lib/systemd/system/slurmctld.service
+
+root@master:/opt/slurm-21.08.8/etc# ln -s /opt/slurm-21.08.8/etc/slurmd.service /usr/lib/systemd/system/slurmd.service
+
+root@master:/opt/slurm-21.08.8/etc# systemctl start slurmctld.service
+
+root@master:/opt/slurm-21.08.8/etc# systemctl status slurmctld.service
+
+root@master:/opt/slurm-21.08.8/etc# cp slurmdbd.conf.example slurmdbd.conf
+
+root@master:/opt/slurm-21.08.8/etc# vi slurmdbd.conf
+	
+	SlurmUser=root
+	StoragePass=root
+	StorageUser=root
+	StorageLoc=slurm_acct_db
+	
+root@master:/opt/slurm-21.08.8/etc# ln -s /opt/slurm-21.08.8/etc/slurmdbd.service /usr/lib/systemd/system/slurmdbd.service
+
+root@master:/opt/slurm-21.08.8/etc# /opt/slurm-21.08.8/sbin/slurmdbd -D
+
+root@master:/opt/slurm-21.08.8/etc# chmod 600 /opt/slurm-21.08.8/etc/slurmdbd.conf
+
+root@master:/opt/slurm-21.08.8/etc# mkdir -p /var/log/slurm/
+
+root@master:/opt/slurm-21.08.8/etc# touch /var/log/slurm/slurmdbd.log
+
+root@master:/opt/slurm-21.08.8/etc# chown 0:0 /var/log/slurm/slurmdbd.log
+
+root@master:/opt/slurm-21.08.8/etc# chmod 600 /var/log/slurm/slurmdbd.log
+
+
+root@master:/opt/slurm-21.08.8/etc# systemctl start slurmdbd.service
+
+root@master:/opt/slurm-21.08.8/etc# systemctl status slurmdbd.service
+
+root@master:/opt/slurm-21.08.8/etc# apt install mariadb-server -y
+
+root@master:/opt/slurm-21.08.8/etc# mariadb
+
+MariaDB [(none)]> show databases;
+MariaDB [(none)]> use slurm_acct_db;
+
+MariaDB [slurm_acct_db]> create user 'slurm@localhost';
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [slurm_acct_db]> grant all privileges on slurm_acct_db.* to 'slurm@localhost';
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [slurm_acct_db]> set password for 'slurm@localhost' = password('root');
+Query OK, 0 rows affected (0.001 sec)
+
+
+
+
+	
+2	-> 	compute_node1
+ubuntu
+20gb drive
+4gb ram
+#hostnamectl set-hostname compute_node1.lab
+#vi /etc/hosts
+	ip_master master.lab
+	ip_node1 compute_node1.lab
+	ip_node2 compute_node2.lab
+:wq
+# apt update -y
+# apt install openssh-server -y
+# apt install vim -y
+# ssh-keygen -t rsa
+# cd .ssh/
+# cat id_rsa.pub
+	copy this key
+	first on node2 run cmd - # ssh-keygen -t rsa it create a directory in all nodes .ssh
+	paste to the node2 root cmd - # vi authorized_keys 
+									paste the key and save it
+
+# apt install nfs-common -y
+
+
+3	-> 	compute_node2
+ubuntu
+20gb drive
+4gb ram
+#hostnamectl set-hostname compute_node1.lab
+#vi /etc/hosts
+	ip_master master.lab
+	ip_node1 compute_node1.lab
+	ip_node2 compute_node2.lab
+:wq
+# apt update -y
+# apt install openssh-server -y
+# apt install vim -y
+# ssh-keygen -t rsa
+# cd .ssh/
+# cat id_rsa.pub
+	copy this key
+	first on node1 run cmd - # ssh-keygen -t rsa it create a directory in all nodes .ssh
+	paste to the node1 root cmd - # vi authorized_keys 
+									paste the key and save it
+									
+# apt install nfs-common -y
