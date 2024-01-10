@@ -1,0 +1,357 @@
+ 1  cd
+    2  fdisk /dev/sdb
+    3  lsblk
+    4  mkfs.ext4 /dev/sdb1
+    5  lsblk
+    6  pwd
+    7  mkdir /nfs
+    8  ls
+    9  mkdir /nfs && echo $?
+   10  ls /nfs && echo $?
+   11  mount /dev/sdb1 /nfs && echo $?
+   12  df -h
+   13  apt -y install open-vm-tools
+   14  apt install nfs-kernel-server -y
+   15  history
+   16  ssh compute1.lab "apt -y install nfs-common"
+   17  ssh compute2.lab "apt -y install nfs-common"
+   18  vi /etc/exports
+   19  exportfs -avr
+   20  vi /etc/exports
+   21  ssh compute2.lab
+   22  ssh compute1.lab "mkdir /nfs"
+   23  ssh compute2.lab "mkdir /nfs"
+   24  ssh compute1.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   25  ssh compute1.lab "df -h"
+   26  ssh compute2.lab "df -h"
+   27  ssh compute2.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   28  ssh compute2.lab "df -h"
+   29  useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1
+   30  groupadd -g 10001 rma
+   31  useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1
+   32  ssh compute1.lab "groupadd -g 10001 rma"
+   33  ssh compute1.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   34  cat /etc/passwd
+   35  ssh compute1.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   36  ssh compute2.lab "groupadd -g 10001 rma"
+   37  ssh compute2.lab "useradd -m -d /nfs/hpcsa1 -u 10001 -g 10001 -s /bin/bash hpcsa1"
+   38  pwd
+   39  ls
+   40  touch f1
+   41  ls
+   42  su hpcsa1
+   43  passwd hpcsa1
+   44  history
+   45  su hpcsa1
+   46  vi /etc/fstab
+   47  ssh root@compute1.la
+   48  lsblk
+   49  vi /etc/exports
+   50  df -h
+   51  mount /dev/sdb1 /nfs && echo $?
+   52  exportfs -avr
+   53  df -h
+   54  ssh compute2.lab "mkdir /nfs"
+   55  ssh compute2.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   56  ssh compute1.lab "mount -t nfs 192.168.144.173:/nfs /nfs"
+   57  ssh compute1.lab "df -h"
+   58  ls
+   59  touch f9
+   60  ls
+   61  su hpcsa1
+   62  cd /opt
+   63  wget https://download.schedmd.com/slurm/slurm-21.08.8.tar.bz2
+   64  ls
+   65  tar -xvf slurm-21.08.8.tar.bz2
+   66  ls
+   67  rm  slurm-21.08.8.tar.bz2.1
+   68  ls
+   69  ssh compute1.lab"cd /opt"
+   70  ssh compute1.lab "cd /opt"
+   71  cd
+   72  apt update
+   73  ssh compute1.lab "apt update"
+   74  ssh compute2.lab "apt update"
+   75  apt install -y build-essential munge libmunge-dev libmunge2 libmysqlclient-dev libssl-dev libpam0g-dev libnuma-dev perl
+   76  ssh copmpute1.lab "apt install -y build-essential munge libmunge-dev libmunge2"
+   77  ssh compute1.lab "apt install -y build-essential munge libmunge-dev libmunge2"
+   78  ssh compute2.lab "apt install -y build-essential munge libmunge-dev libmunge2"
+   79  cd /opt/slurm-21.08.8
+   80  pwd
+   81  ls
+   82  ./configure --prefix=/opt/slurm-21.08.8
+   83  ssh compute1.lab "./configure --prefix=/opt/slurm-21.08.8"
+   84  ssh compute1.lab "cd /opt/slurm && ./configure --prefix=/opt/slurm-21.08.8"
+   85  ssh compute1.lab
+   86  make
+   87  make install
+   88  cd
+   89  cd /opt/slurm-21.08.8
+   90  munge --version
+   91  chown munge: /etc/munge/munge.key
+   92  chmod 400 /etc/munge/munge.key
+   93  scp -r /etc/munge/munge.key  slurm@compute1.lab:/tmp
+   94  scp -r /etc/munge/munge.key  root@compute1.lab:/tmp
+   95  scp -r /etc/munge/munge.key  root@compute2.lab:/tmp
+   96  ssh compute1.lab "cp -r /tmp/munge.key /etc/munge"
+   97  ssh compute2.lab "cp -r /tmp/munge.key /etc/munge"
+   98  chown -R munge: /etc/munge/ /var/log/munge/
+   99  chmod 700 /etc/munge/ /var/log/munge/
+  100  ssh compute1.lab "chown -R munge: /etc/munge/ /var/log/munge/"
+  101  ssh compute2.lab "chown -R munge: /etc/munge/ /var/log/munge/"
+  102  systemctl start munge
+  103  ssh compute1.lab "systemctl start munge"
+  104  ssh compute1.lab "systemctl enable munge"
+  105  ssh compute2.lab "systemctl enable munge"
+  106  ssh compute2.lab "systemctl start munge"
+  107  cd etc
+  108  ls
+  109  cp slurm.conf.example slurm.conf
+  110  vi slurm.conf
+  111  hostname
+  112  ping compute1.lab
+  113  ping compute2.lab
+  114  vi slurm.conf
+  115  cd ..
+  116  cd sbin
+  117  ls
+  118  cd .. etc
+  119  cd ..
+  120  cd etc
+  121  ln -s /opt/slurm-21.08.8/etc/slurmd.service /usr/lib/systemd/system/slurmd.service
+  122  cd /usr/lib
+  123  cd systemd/
+  124  cd system
+  125  ls
+  126  cd system-environment-generators/
+  127  ls
+  128  cd ..
+  129  ls
+  130  ln -s /opt/slurm-21.08.8/etc/slurmd.service /etc/systemd/system/slurmd.service
+  131  ln -s /opt/slurm-21.08.8/etc/slurmctld.service /etc/systemd/system/slurmctld.service
+  132  vi slurm.conf
+  133  cd
+  134  cd etc
+  135  cd /opt/slurm-21.08.8
+  136  cd etc
+  137  vi slurm.conf
+  138  sinfo
+  139  history
+  140  ip a
+  141  sinfo
+  142  apt install slurm-client
+  143  sinfo
+  144  ip a
+  145  systemctl status slurmctld.service
+  146  cd
+  147  vi .bashrc
+  148  sinfo
+  149  source ~/.bashrc
+  150  sinfo
+  151  scp -r /opt/slurm-21.08.8/etc/slurm.conf root@192.168.144.174:/tmp
+  152  source ~/.bashrc
+  153  sinfo
+  154  systemctl start slurmctld.service
+  155  systemctl start slurmd.service
+  156  systemctl status slurmd.service
+  157  ls -lrt
+  158  cd /opt
+  159  cd slurm-21.08.8
+  160  cd etc/
+  161  systemctl start slurmd.service
+  162  systemctl status slurmd.service
+  163  ls -lrt
+  164  cp cgroup.conf.example cgroup.conf
+  165  systemctl restart slurmd.service
+  166  systemctl status slurmd.service
+  167  ssh compute1.lab "systemctl start slurmd.service"
+  168  history
+  169  ssh compute1.lab
+  170  ssh 192.168.144.174
+  171  cd
+  172  cd .ssh
+  173  ls
+  174  cd
+  175  cat /etc/hosts
+  176  ip a
+  177  cd /opt/slurm-21.08.8/etc/
+  178  ssh compute1.lab "systemctl restart slurmd.service "
+  179  ssh compute1.lab "systemctl status slurmd.service "
+  180  ssh compute1.lab "ln -s /opt/slurm-21.08.8/etc/slurmctld.service /etc/systemd/system/slurmctld.service "
+  181  ssh compute1.lab "systemctl status slurmd.service "
+  182  ssh compute1.lab "systemctl restart slurmd.service "
+  183  ssh compute1.lab "vi .bashrc "
+  184  cd
+  185  ssh compute1.lab "vi .bashrc"
+  186  cd
+  187  cd /opt/slurm-21.08.8
+  188  cd etc
+  189  /opt/slurm-21.08.8/sbin/slurmctld -D
+  190  vi slurm.conf
+  191  /opt/slurm-21.08.8/sbin/slurmctld -D
+  192  apt-get install mailutils
+  193  /opt/slurm-21.08.8/sbin/slurmctld -D
+  194  vi slurm.conf
+  195  /opt/slurm-21.08.8/sbin/slurmctld -D
+  196  nano slurm.conf
+  197  systemctl start slurmctld.service
+  198  systemctl status slurmctld.service
+  199  /opt/slurm-21.08.8/sbin/slurmctld -D
+  200  systemctl start slurmctld.service
+  201  systemctl status slurmctld.service
+  202  cd
+  203  cd bin
+  204  cd /bin
+  205  ls
+  206  cd
+  207  cd /opt/slurm-21.08.8/bin
+  208  pwd
+  209  export PATH="/opt/slurm-21.08.8/bin":$PATH
+  210  export PATH="/opt/slurm-21.08.8/bin":$PATH export PATH="/opt/slurm-21.08.8/bin":$PATH
+  211  export PATH="/opt/slurm-21.08.8/sbin":$PATH
+  212  cd ..
+  213  cd lib
+  214  pwd
+  215  /opt/slurm-21.08.8/lib
+  216  export LD_LIBRARY_PATH="/opt/slurm-21.08.8/lib"
+  217  export LD_LIBRARY_PATH="/opt/slurm-21.08.8/lib:$LD_LIBRARY_PATH"
+  218  vi .bashrc
+  219  ls
+  220  cd
+  221  vi .bashrc
+  222  source ~/.bashrc
+  223  info
+  224  sinfo
+  225  history
+  226  debug*       up   infinite      3   unk* compute1.lab,compute2.lab,master.lab
+  227  root@master:~# history
+  228  sinfo
+  229  cd /opt/
+  230  ls
+  231  cd slurm-21.08.8
+  232  ls
+  233  cd /etc
+  234  cd ..
+  235  cd /opt/slurm-21.08.8/etc/
+  236  ls
+  237  vi slurm.conf
+  238  ls
+  239  vi sample.sh
+  240  sbatch sample.sh
+  241  vi sample.sh
+  242  sbatch sample.sh
+  243  systemctl restart slurmctld
+  244  systemctl status slurmctld
+  245  sbatch sample.sh
+  246  job id
+  247  cd
+  248  ls
+  249  cd /opt/slurm-21.08.8/etc/
+  250  ls -lrt
+  251  scontrol show job 2
+  252  sinfo
+  253  scontrol update Nodename=compute1.lab --state=resume
+  254  scontrol update Nodename=compute1.lab --state=Resume
+  255  scontrol update Nodename=compute1.lab state=Resume
+  256  sinfo
+  257  scontrol update Nodename=compute2.lab state=Resume
+  258  scontrol update Nodename=master.lab state=Resume
+  259  sinfo
+  260  scontrol show job 2
+  261  vi sample.sh
+  262  sbatch sample.sh
+  263  scontrol show job 3
+  264  sinfo
+  265  scontrol update Nodename=compute2.lab state=Resume
+  266  sinfo
+  267  scontrol update Nodename=compute1.lab state=Resume
+  268  scontrol update Nodename=master.lab state=Resume
+  269  sinfo
+  270  cd
+  271  ls
+  272  cd /opt/slurm-21.08.8/etc/
+  273  cat sample.sh
+  274  cd
+  275  vi firstjob.sh
+  276  sbatch firstjob.sh
+  277  scontrol show job 4
+  278  sinfo
+  279  ls
+  280  squeue
+  281  sinfo
+  282  scontrol update Nodename=compute1.lab state=Resume
+  283  scontrol update Nodename=compute2.lab state=Resume
+  284  scontrol update Nodename=master.lab state=Resume
+  285  sinfo
+  286  scontrol show job 4
+  287  squeue
+  288  scancel job 2
+  289  scancel  2
+  290  scancel  3
+  291  squeue
+  292  scontrol show job 4
+  293  scancel  4
+  294  sinfo
+  295  ls
+  296  sinfo
+  297  sbatch firstjob.sh
+  298  scontrol show job 5
+  299  sinfo
+  300  scontrol show job 5
+  301  sinfo
+  302  ls -ltr
+  303  nano firstjob.sh
+  304  sbatch firstjob.sh
+  305  squeue
+  306  sinfo
+  307  systemctl start slurmd
+  308  squeue
+  309  scontrol show job 5
+  310  cd sukanya
+  311  mldir sukanya
+  312  mkdir sukanya
+  313  cd sukanya
+  314  vi mypy.py
+  315  cd
+  316  vi pyrequire
+  317  sbatch pyrequire
+  318  scontrol show job 7
+  319  cd sukanya/
+  320  ls
+  321  pwd
+  322  cd
+  323  vi pyrequire
+  324  sbatch pyrequire
+  325  scontrol show job 8
+  326  cat pyrequire
+  327  cd sukanya/
+  328  ls
+  329  vi pyreq
+  330  sbatch pyreq
+  331  sbatch pyreq
+  332  vi pyreq
+  333  sbatch pyreq
+  334  vi pyreq
+  335  sbatch pyreq
+  336  scontrol show job 9
+  337  sbatch pyreq
+  338  vi pyreq
+  339  cd
+  340  sacctmgr create cluster coe-master
+  341  sacctmgr show cluster
+  342  sacctmgr add account rmalab-acc
+  343  sacctmgr show associations
+  344  sacctmgr show accounts
+  345  sacctmgr create user name=sukanya DefaultAccount=rmalab-acc
+  346  show associations
+  347  sacctmgr show associations
+  348  sacctmgr add account demolab-acc
+  349  sacctmgr create user name=sukanya DefaultAccount=demolab-acc
+  350  sacctmgr show associations
+  351  sacctmgr show users
+  352  sacctmgr show user sukanya format=User, Defaultaccount
+  353  sacctmgr show user sukanya format=User,Defaultaccount
+  354  sacctmgr list associations where parent=demolab-acc
+  355  sacctmgr list associations where parent=rmlab-acc
+  356  sacctmgr show cluster
+  357  history
